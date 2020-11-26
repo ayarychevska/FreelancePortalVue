@@ -1,21 +1,13 @@
 <template>
-    <div id="app">
-        <div id="nav">
-            <router-link to="/"> Home </router-link> |
-            <router-link to="/about"> About </router-link> |
-            <router-link :to="{ 'name': 'auth-registration' }"> Registration </router-link>
-        </div>
-
-        <default />
-    </div>
+    <default-empty />
 </template>
 
 <script lang="ts">
 
 import { Component, Vue } from "vue-property-decorator";
-import Default from './views/Default.vue';
+import DefaultEmpty from './views/DefaultEmpty.vue';
 
-@Component({ components: { Default } })
+@Component({ components: { DefaultEmpty } })
 export default class App extends Vue {
 }
 </script>
