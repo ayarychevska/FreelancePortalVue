@@ -1,11 +1,16 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import authStore from "@/store/authStore";
 
 Vue.use(Vuex);
 
-export default new Vuex.Store({
+const store = new Vuex.Store({
+  strict: false,
   state: {},
   mutations: {},
   actions: {},
-  modules: {}
+  modules: { auth: authStore }
 });
+
+Vue.prototype.$store = store;
+export default store;
