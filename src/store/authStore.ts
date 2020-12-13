@@ -4,35 +4,36 @@ import { UserLoginModel } from "@/models/core/common/Users";
 
 @Module({ namespaced: true })
 export default class AuthStore extends VuexModule {
-    private status: string;
+    private status: boolean | null;
     private token: string = localStorage.getItem("token") || "";
-    private user: any;
+    private user: any = JSON.parse(localStorage.getItem("user")) || null;
 
     @Mutation
     authRequest() {
-        this.status = "loading";
+        this.status = null;
     }
 
     @Mutation
     authSuccess(data) {
-        this.status = "success";
+        this.status = true
         this.token = data.token;
         this.user = data.user;
     }
 
     @Mutation
     authError() {
-        this.status = "error";
+        this.status = false;
     }
 
     @Mutation
-    logout() {
-        this.status = "";
+    logoutMutation() {
+        this.status = null;
         this.token = "";
+        this.user = null;
     }
 
     @Action
-    async login(loginData: UserLoginModel) {
+    async login(loginData: UserLoginModel): Promise<boolean> {
         try {
             this.context.commit('authRequest');
 
@@ -42,42 +43,26 @@ export default class AuthStore extends VuexModule {
             const user = response.data.userDetails;
 
             localStorage.setItem("token", token);
-            axios.defaults.headers.common["Authorization"] = token;
+            localStorage.setItem("user", JSON.stringify(user));
+            axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
             this.context.commit('authSuccess', { token, user });
+            return true;
         }
         catch (err) {
             console.log("Login error", err);
             this.context.commit('authError');
             localStorage.removeItem("token");
+            return false;
         }
     }
 
-    /*register({ commit }, user) {
-        return new Promise((resolve, reject) => {
-            commit('auth_request')
-            axios({ url: 'http://localhost:3000/register', data: user, method: 'POST' })
-                .then(resp => {
-                    const token = resp.data.token
-                    const user = resp.data.user
-                    localStorage.setItem('token', token)
-                    // Add the following line:
-                    axios.defaults.headers.common['Authorization'] = token
-                    commit('auth_success', token, user)
-                    resolve(resp)
-                })
-                .catch(err => {
-                    commit('auth_error', err)
-                    localStorage.removeItem('token')
-                    reject(err)
-                })
-        })
-    },
-    logout({ commit }) {
-        return new Promise((resolve, reject) => {
-            commit('logout')
-            localStorage.removeItem('token')
-            delete axios.defaults.headers.common['Authorization']
-            resolve()
-        })*/
+
+    @Action
+    async logout() {
+        this.context.commit('logoutMutation');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        delete axios.defaults.headers.common['Authorization'];
+    }
 }

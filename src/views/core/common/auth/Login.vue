@@ -54,15 +54,44 @@ import { Component, Vue } from "vue-property-decorator";
 export default class Login extends Vue {
     private user: UserLoginModel = {
         login: "Alevtyna3",
-        password: "password1"
+        password: "qwerty"
     };
 
     async login(): Promise<void> {
         await this.$store.dispatch("auth/login", this.user);
-        console.log(this.$store.state.auth.user);
 
-        /* const qwe1 = await this.$axios.get("/applicationusers/list");
-        console.log(qwe1); */
+        if (this.$store.state.auth.status) {
+            this.$swal.fire({
+                icon: 'success',
+                title: 'Signed in successfully',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', this.$swal.stopTimer)
+                    toast.addEventListener('mouseleave', this.$swal.resumeTimer)
+                }
+            });
+
+            this.$router.push({ name: "dashboard" });
+        }
+        else {
+            this.$swal.fire({
+                icon: 'error',
+                title: 'Wrong login or password',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', this.$swal.stopTimer)
+                    toast.addEventListener('mouseleave', this.$swal.resumeTimer)
+                }
+            });
+        }
     }
 }
 </script>

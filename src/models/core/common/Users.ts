@@ -17,3 +17,10 @@ export interface UserLoginModel {
   login: string;
   password: string;
 }
+
+export interface ChangePasswordModel {
+  id: string;
+  previousPassword: string;
+  password: string;
+  repeatedPassword: string;
+}
