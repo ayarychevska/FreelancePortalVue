@@ -11,6 +11,7 @@ import axios, { AxiosStatic } from "axios";
 import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import vSelect from 'vue-select';
+import Editor from '@tinymce/tinymce-vue'
 
 
 axios.defaults.baseURL = process.env.VUE_APP_API_URL;
@@ -28,7 +29,8 @@ Vue.use(Vuikit);
 Vue.use(VuikitIcons);
 Vue.use(BootstrapVue);
 Vue.config.productionTip = false;
-Vue.component('v-select', vSelect)
+Vue.component('v-select', vSelect);
+Vue.component('editor', Editor);
 
 
 new Vue({

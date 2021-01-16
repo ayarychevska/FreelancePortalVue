@@ -41,6 +41,16 @@ const routes: Array<RouteConfig> = [
                 path: "/post-add",
                 name: "post-add",
                 component: () => import(/* webpackChunkName: "about" */ "../views/core/teacher/post/PostCreation.vue")
+            },
+            {
+                path: "/post-edit/:id",
+                name: "post-edit",
+                component: () => import(/* webpackChunkName: "about" */ "../views/core/teacher/post/PostCreation.vue")
+            },
+            {
+                path: "/post-details/:id",
+                name: "post-details",
+                component: () => import(/* webpackChunkName: "about" */ "../views/core/common/post/View.vue")
             }
         ]
     },

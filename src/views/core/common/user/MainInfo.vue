@@ -114,9 +114,10 @@ export default class MainInfo extends Vue {
         dateOfBirth: DateTime.local(),
         gender: "",
         description: "",
+        role: null,
+        subjectsIds: [],
         password: "",
-        repeatPassword: "",
-        role: null
+        repeatPassword: ""
     };
 
     private day: number = null;
@@ -167,7 +168,7 @@ export default class MainInfo extends Vue {
     }
 
     async loadData(): Promise<void> {
-        const response: any = await this.$axios.get("/application-users/" + this.$store.state.auth.user.id);
+        const response: any = await this.$axios.get("/application-users/" + this.$store.state.auth.user.id + '/raw');
         this.user = response.data;
         const date: DateTime = DateTime.fromISO(this.user.dateOfBirth.toString());
         this.day = date.day;

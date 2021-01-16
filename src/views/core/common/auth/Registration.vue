@@ -181,7 +181,8 @@ export default class Registration extends Vue {
         description: "",
         password: "",
         repeatPassword: "",
-        role: null
+        role: null,
+        subjectsIds: []
     };
 
     private day: number = null;
