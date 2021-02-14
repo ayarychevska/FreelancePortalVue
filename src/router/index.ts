@@ -33,6 +33,11 @@ const routes: Array<RouteConfig> = [
                 component: () => import(/* webpackChunkName: "about" */ "../views/core/common/user/Profile.vue")
             },
             {
+                path: "/user-view/:id",
+                name: "user-view",
+                component: () => import(/* webpackChunkName: "about" */ "../views/core/common/user/View.vue")
+            },
+            {
                 path: "/my-posts",
                 name: "my-posts",
                 component: () => import(/* webpackChunkName: "about" */ "../views/core/teacher/post/MyPostsList.vue")
@@ -51,6 +56,31 @@ const routes: Array<RouteConfig> = [
                 path: "/post-details/:id",
                 name: "post-details",
                 component: () => import(/* webpackChunkName: "about" */ "../views/core/common/post/View.vue")
+            },
+            {
+                path: "calendar",
+                name: "calendar",
+                component: () => import(/* webpackChunkName: "about" */ "../views/core/common/calendar/Cal.vue")
+            },
+            {
+                path: "appointment",
+                name: "appointment",
+                component: () => import(/* webpackChunkName: "about" */ "../views/core/common/appointment/List.vue")
+            },
+            {
+                path: "appointment-add/:id",
+                name: "appointment-add",
+                component: () => import(/* webpackChunkName: "about" */ "../views/core/common/appointment/Create.vue")
+            },
+            {
+                path: "appointment-edit/:id",
+                name: "appointment-edit",
+                component: () => import(/* webpackChunkName: "about" */ "../views/core/common/appointment/Create.vue")
+            },
+            {
+                path: "appointment-details/:id",
+                name: "appointment-details",
+                component: () => import(/* webpackChunkName: "about" */ "../views/core/common/appointment/Details.vue")
             }
         ]
     },

@@ -22,9 +22,23 @@
                     </vk-navbar-nav-item>
                 </vk-navbar-nav>
 
-                <vk-navbar-item>
-                    <div>Some <a>Link</a></div>
-                </vk-navbar-item>
+                <vk-navbar-nav>
+                    <vk-navbar-nav-item
+                        icon="calendar"
+                        title="Calendar"
+                        @click="$router.push({ name: 'calendar' })"
+                    >
+                    </vk-navbar-nav-item>
+                </vk-navbar-nav>
+
+                <vk-navbar-nav>
+                    <vk-navbar-nav-item
+                        icon="clock"
+                        title="Appointment"
+                        @click="$router.push({ name: 'appointment' })"
+                    >
+                    </vk-navbar-nav-item>
+                </vk-navbar-nav>
             </vk-navbar-nav>
 
             <vk-navbar-nav slot="right">
@@ -36,6 +50,10 @@
                     <vk-navbar-nav-dropdown-nav>
                         <vk-nav-item
                             title="Profile"
+                            @click="view"
+                        ></vk-nav-item>
+                        <vk-nav-item
+                            title="Settings"
                             @click="profile"
                         ></vk-nav-item>
                         <vk-nav-item-divider></vk-nav-item-divider>
@@ -63,7 +81,6 @@ import DefaultEmpty from "./DefaultEmpty.vue";
 @Component({ components: { DefaultEmpty } })
 export default class Default extends Vue {
     get user() {
-        console.log(this.$store.state.auth.user);
         return this.$store.state.auth.user;
     }
 
@@ -74,6 +91,10 @@ export default class Default extends Vue {
 
     async profile(): Promise<void> {
         this.$router.push({ name: "user-profile" });
+    }
+
+    async view(): Promise<void> {
+        this.$router.push({ name: "user-view", params: { id: this.user.id } });
     }
 }
 </script>

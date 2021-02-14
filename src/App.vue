@@ -7,7 +7,12 @@ import { Component, Vue } from "vue-property-decorator";
 import DefaultEmpty from "./views/DefaultEmpty.vue";
 
 @Component({ components: { DefaultEmpty } })
-export default class App extends Vue { }
+export default class App extends Vue {
+    metaInfo: {
+        title: 'About Us'
+    }
+}
+
 </script>
 
 <style lang="scss">

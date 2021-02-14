@@ -12,7 +12,7 @@ import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import vSelect from 'vue-select';
 import Editor from '@tinymce/tinymce-vue'
-
+import VCalendar from 'v-calendar';
 
 axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem('token')}`;
@@ -31,10 +31,13 @@ Vue.use(BootstrapVue);
 Vue.config.productionTip = false;
 Vue.component('v-select', vSelect);
 Vue.component('editor', Editor);
-
+// Use v-calendar & v-date-picker components
+Vue.use(VCalendar, {});
 
 new Vue({
     router,
     store,
     render: h => h(App)
 }).$mount("#app");
+
+document.title = "Study Portal";
