@@ -53,8 +53,8 @@ import { Component, Vue } from "vue-property-decorator";
 @Component({})
 export default class Login extends Vue {
     private user: UserLoginModel = {
-        login: "Alevtyna3",
-        password: "qwerty"
+        login: "katya",
+        password: "katya"
     };
 
     async login(): Promise<void> {

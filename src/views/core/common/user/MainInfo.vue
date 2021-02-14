@@ -114,7 +114,6 @@ export default class MainInfo extends Vue {
         dateOfBirth: DateTime.local(),
         gender: "",
         description: "",
-        role: null,
         subjectsIds: [],
         password: "",
         repeatPassword: ""

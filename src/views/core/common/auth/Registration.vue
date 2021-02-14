@@ -128,7 +128,7 @@
                                             class="uk-radio"
                                             type="radio"
                                             name="user-role"
-                                            v-model="user.role"
+                                            v-model="user.userType"
                                         />
                                         {{ option.title }}
                                     </label>
@@ -167,8 +167,8 @@ import { DateTime } from "luxon";
 @Component({})
 export default class Registration extends Vue {
     private roles: any[] = [
-        { title: "Student", value: 0 },
-        { title: "Teacher", value: 1 }
+        { title: "Student", value: 'student' },
+        { title: "Teacher", value: 'teacher' }
     ];
 
     private user: UserCreateModel = {
@@ -181,7 +181,6 @@ export default class Registration extends Vue {
         description: "",
         password: "",
         repeatPassword: "",
-        role: null,
         subjectsIds: []
     };
 

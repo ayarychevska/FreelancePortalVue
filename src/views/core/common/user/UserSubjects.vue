@@ -64,7 +64,6 @@ export default class UserSubjects extends Vue {
 
     async created(): Promise<void> {
         await this.loadData();
-        console.log(this.subjects);
     }
 
     private user: UserCreateModel = {
@@ -75,7 +74,6 @@ export default class UserSubjects extends Vue {
         dateOfBirth: DateTime.local(),
         gender: "",
         description: "",
-        role: null,
         subjectsIds: [],
         password: "",
         repeatPassword: ""
