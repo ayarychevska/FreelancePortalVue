@@ -1,6 +1,5 @@
 <template>
     <div class="container">
-
         <vk-button
             class="uk-width-1-1 uk-button-primary"
             @click="add"
@@ -15,6 +14,7 @@
                 <post-preview
                     class="mb-3"
                     :post="post"
+                    :editable="true"
                 />
             </div>
         </div>

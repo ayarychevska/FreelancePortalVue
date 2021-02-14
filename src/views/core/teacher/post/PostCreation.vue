@@ -60,23 +60,83 @@
                     </div>
                 </fieldset>
             </form>
+
+            <p>
+                Status: {{ currentPostStatus }}
+            </p>
+
             <vk-button
                 v-if="postId == 0"
                 class="uk-width-1-1 uk-button-secondary"
                 @click="add"
             >Add</vk-button>
-            <vk-button
+            <div
+                class="row"
                 v-else
-                class="uk-width-1-1 uk-button-secondary"
-                @click="edit"
-            >Edit</vk-button>
+            >
+                <div
+                    class="col-3"
+                    v-if="post.status != postStatus.Published"
+                >
+                    <vk-button
+                        class="uk-width-1-1 uk-button-primary"
+                        @click="changeStatus(postStatus.Published)"
+                    >
+                        <vk-icon
+                            icon="pull"
+                            class="mr-1"
+                        ></vk-icon> Publish
+                    </vk-button>
+                </div>
+
+                <div
+                    class="col-3"
+                    v-if="post.status != postStatus.Draft"
+                >
+                    <vk-button
+                        class="uk-width-1-1 uk-button-primary"
+                        @click="changeStatus(postStatus.Draft)"
+                    >
+                        <vk-icon
+                            icon="pencil"
+                            class="mr-1"
+                        ></vk-icon>Move to draft
+                    </vk-button>
+                </div>
+                <div
+                    class="col-3"
+                    v-if="post.status != postStatus.Archivized"
+                >
+                    <vk-button
+                        class="uk-width-1-1 uk-button-danger"
+                        @click="changeStatus(postStatus.Archivized)"
+                    >
+                        <vk-icon
+                            icon="push"
+                            class="mr-1"
+                        ></vk-icon>Move to archive
+                    </vk-button>
+                </div>
+                <div class="col-6">
+                    <vk-button
+                        v-if="isAuthor"
+                        class="uk-width-1-1 uk-button-secondary"
+                        @click="edit"
+                    >
+                        <vk-icon
+                            icon="check"
+                            class="mr-1"
+                        ></vk-icon>Save
+                    </vk-button>
+                </div>
+            </div>
         </vk-card>
     </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { PostCreateModel } from '@/models/core/teacher/Posts';
+import { PostCreateModel, PostStatus, StatusTranslate } from '@/models/core/teacher/Posts';
 import { SubjectsTitles } from '@/models/core/teacher/Subjects';
 import { DateTime } from "luxon";
 
@@ -84,18 +144,33 @@ import { DateTime } from "luxon";
 export default class PostCreation extends Vue {
     private subjects: SubjectsTitles[] = [];
     private post: PostCreateModel = {
+        id: 0,
         title: "",
         text: "",
         userId: "",
         status: 0,
         subjectId: null
     }
+
+    private get postStatus() {
+        return PostStatus;
+    }
+
+    private get currentPostStatus() {
+        return StatusTranslate.find(x => x.status == this.post.status).value;
+    }
+
     private get tinyMceApiKey(): string {
         return process.env.VUE_APP_TINY_MCE_API_KEY;
     }
 
+
     private get postId(): number {
         return Number(this.$route.params.id) || 0;
+    }
+
+    private get isAuthor(): boolean {
+        return this.$store.state.auth.user.id == this.post.userId;
     }
 
     async created(): Promise<void> {
@@ -149,6 +224,41 @@ export default class PostCreation extends Vue {
             this.$swal.fire({
                 icon: 'success',
                 title: 'Edited',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', this.$swal.stopTimer)
+                    toast.addEventListener('mouseleave', this.$swal.resumeTimer)
+                }
+            });
+        }
+        catch {
+            this.$swal.fire({
+                icon: 'error',
+                title: 'Something went wrong',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', this.$swal.stopTimer)
+                    toast.addEventListener('mouseleave', this.$swal.resumeTimer)
+                }
+            });
+        }
+    }
+
+    async changeStatus(status: number): Promise<void> {
+        try {
+            this.post = (await this.$axios.put(`/posts/${this.post.id}/set-status`, null, { params: { status } })).data;
+
+            this.$swal.fire({
+                icon: 'success',
+                title: 'Status changed',
                 toast: true,
                 position: 'top-end',
                 showConfirmButton: false,

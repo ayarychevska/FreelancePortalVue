@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 
 export interface PostCreateModel {
+    id: number;
     title: string;
     text: string;
     userId: string;
@@ -9,6 +10,7 @@ export interface PostCreateModel {
 }
 
 export interface PostListViewModel {
+    id: number;
     title: string;
     text: string;
     dateUtc: DateTime;
@@ -20,6 +22,7 @@ export interface PostListViewModel {
 }
 
 export interface PostViewModel {
+    id: number;
     title: string;
     text: string;
     userId: string;
@@ -29,3 +32,15 @@ export interface PostViewModel {
     subjectId: number;
     subjectTitle: string;
 }
+
+export enum PostStatus {
+    Draft = 0,
+    Published = 1,
+    Archivized = 2
+}
+
+export const StatusTranslate = [
+    { status: PostStatus.Draft, value: 'Draft' },
+    { status: PostStatus.Archivized, value: 'Archivized' },
+    { status: PostStatus.Published, value: 'Published' }
+];
