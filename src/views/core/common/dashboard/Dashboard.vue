@@ -3,11 +3,52 @@
         <h1 class="mt-3"> Welcome to Study platform </h1>
 
         <div class="row">
-            <div class="col-md-10 pr-5">
-                <div class="row mt-4">
+            <!-- Filters -->
+            <div class="col-md-2 uk-text-left pr-5">
+                <h3> Filters </h3>
+
+                <label for="name">Title</label>
+                <input
+                    label="title"
+                    class="uk-input uk-form-small mb-2"
+                    v-model="filter.title"
+                >
+
+                <label for="name">Subject</label>
+                <v-select
+                    label="title"
+                    :options="subjects"
+                    :reduce="x => x.id"
+                    v-model="filter.subjectId"
+                ></v-select>
+
+                <v-date-picker
+                    class="mt-2"
+                    v-model="range"
+                    is-range
+                />
+
+                <vk-button
+                    class="uk-text-right"
+                    type="link"
+                    @click="eraseDate()"
+                >Erase date</vk-button>
+
+                <vk-button
+                    class="uk-width-1-1 uk-button-secondary mt-3"
+                    @click="filterData"
+                >Filter</vk-button>
+            </div>
+
+            <!-- Posts -->
+            <div class="col-md-8 pr-5">
+                <div
+                    class="row mt-4"
+                    style="height: 95%; min-height: 595px"
+                >
                     <div
                         class="col-lg-4 col-md-6"
-                        v-for="post in myPosts"
+                        v-for="post in data.viewModels"
                         :key="post.id"
                     >
                         <post-preview
@@ -17,8 +58,20 @@
                         />
                     </div>
                 </div>
+
+                <!-- Pagination -->
+                <div class="overflow-auto mt-5">
+                    <b-pagination
+                        style="justify-content: center;"
+                        v-model="pager.page"
+                        :total-rows="pager.total"
+                        :per-page="pager.size"
+                        aria-controls="appointments-list"
+                    ></b-pagination>
+                </div>
             </div>
 
+            <!-- User Info and links -->
             <div class="col-md-2">
                 <img
                     src="@/assets/images/avatar.jpg"
@@ -99,17 +152,67 @@
 
 <script lang="ts">
 import { PostListViewModel } from "@/models/core/teacher/Posts";
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
 import PostPreview from '@/views/core/common/post/Preview.vue';
+import { PostsFilterModel } from "@/models/core/teacher/Posts";
+import { Pager } from "@/models/core/common/Pager";
+import { SubjectsTitles } from "@/models/core/teacher/Subjects";
 import { DateTime } from "luxon";
+import { merge } from 'lodash';
 
 @Component({ components: { PostPreview } })
 export default class Dashboard extends Vue {
-    private myPosts: PostListViewModel[] = [];
+    private pager: Pager = {
+        page: 1,
+        size: 6,
+        total: 0
+    };
+
+    private range: any = {
+        start: null,
+        end: null
+    }
+
+    private subjects: SubjectsTitles[] = [];
+
+    private data =
+        {
+            viewModels: [],
+            pager: null
+        };
+
+    private filter: PostsFilterModel = {
+        title: null,
+        dateFromUTC: null,
+        dateUntilUTC: null,
+        teacherId: null,
+        subjectId: null
+    };
 
     async created(): Promise<void> {
-        const response = await this.$axios.get("/posts/list");
-        this.myPosts = response.data;
+        await this.loadData();
+    }
+
+    async loadData() {
+        this.subjects = (await this.$axios.get("/subjects/list")).data;
+
+        await this.filterData();
+    }
+
+    eraseDate() {
+        this.range.start = null;
+        this.range.end = null;
+    }
+
+    @Watch('pager.page')
+    async filterData(): Promise<void> {
+        this.filter.dateFromUTC = this.range.start;
+        this.filter.dateUntilUTC = this.range.end;
+        const response = await this.$axios.get("/posts/list",
+            { params: merge(this.filter, this.pager) });
+
+        this.data = response.data;
+        this.pager = this.data.pager;
     }
 }
 </script>

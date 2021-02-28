@@ -44,3 +44,11 @@ export const StatusTranslate = [
     { status: PostStatus.Archivized, value: 'Archivized' },
     { status: PostStatus.Published, value: 'Published' }
 ];
+
+export interface PostsFilterModel {
+    title: string | null;
+    dateFromUTC: DateTime | null;
+    dateUntilUTC: DateTime | null;
+    teacherId: string | null;
+    subjectId: number | null;
+}
