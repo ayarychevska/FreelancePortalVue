@@ -56,6 +56,7 @@
                     </div>
                 </div>
 
+                <!-- Create review -->
                 <div class="col-7">
                     <create-review
                         v-if="userId != $store.state.auth.user.id"
@@ -65,19 +66,33 @@
                         @update-reviews="loadReviews()"
                     />
 
-                    <template v-if="reviews.length > 0">
-                        <h3>Reviews</h3>
-                        <div
-                            v-for="review in reviews"
-                            :key="review.id"
-                        >
-                            <review-preview
-                                class="mb-3"
-                                :review="review"
-                                :editable="false"
-                            />
+                    <!-- Reviews list -->
+                    <div v-if="data.reviews.length > 0">
+                        <template>
+                            <h3>Reviews</h3>
+                            <div
+                                v-for="review in data.reviews"
+                                :key="review.id"
+                            >
+                                <review-preview
+                                    class="mb-3"
+                                    :review="review"
+                                    :editable="false"
+                                />
+                            </div>
+                        </template>
+
+                        <!-- Pagination -->
+                        <div class="overflow-auto mt-5">
+                            <b-pagination
+                                style="justify-content: center;"
+                                v-model="pager.page"
+                                :total-rows="pager.total"
+                                :per-page="pager.size"
+                            ></b-pagination>
                         </div>
-                    </template>
+                    </div>
+
                     <p v-else> No reviews yet </p>
                 </div>
             </div>
@@ -92,6 +107,8 @@ import { DateTime } from "luxon";
 import ReviewPreview from "@/views/core/common/review/View.vue"
 import CreateReview from "@/views/core/common/review/Create.vue"
 import { ReviewViewModel } from "@/models/core/common/Reviews";
+import { Pager } from "@/models/core/common/Pager";
+import { merge } from 'lodash';
 
 @Component({ components: { ReviewPreview, CreateReview } })
 export default class UserView extends Vue {
@@ -106,12 +123,24 @@ export default class UserView extends Vue {
         subjects: []
     }
 
+    private pager: Pager = {
+        page: 1,
+        size: 3,
+        total: 0
+    };
+
     @Watch('userId')
     private async reloadData(): Promise<void> {
         await this.loadData();
     }
 
-    private reviews: ReviewViewModel[] = []
+    //private reviews: ReviewViewModel[] = []
+
+    private data =
+        {
+            reviews: [],
+            pager: null
+        };
 
     private get prettyListOfUserSubjects(): string {
         return this.capitalizeFirstLetter(this.user.subjects.map(x => x.title).join(', '));
@@ -123,7 +152,6 @@ export default class UserView extends Vue {
 
     async created(): Promise<void> {
         await this.loadData();
-
     }
 
     async loadData(): Promise<void> {
@@ -133,11 +161,13 @@ export default class UserView extends Vue {
         await this.loadReviews();
     }
 
+    @Watch('pager.page')
     async loadReviews() {
-        const loadReviews: any = await this.$axios.get("/reviews/user-reviews/" + this.userId);
-        this.reviews = loadReviews.data;
-    }
+        const loadReviews: any = await this.$axios.get("/reviews/user-reviews/" + this.userId, { params: this.pager });
+        this.data = loadReviews.data;
 
+        this.pager = this.data.pager;
+    }
 
     get prettyDateOfBirthDate() {
         if (this.user.dateOfBirth)
