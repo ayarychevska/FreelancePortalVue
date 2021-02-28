@@ -22,3 +22,12 @@ export interface AppointmentViewModel {
     subjectId: string;
     subjectTitle: string;
 }
+
+export interface AppointmentFilterModel {
+    title: string | null;
+    dateFromUTC: DateTime | null;
+    dateUntilUTC: DateTime | null;
+    teacherId: string | null;
+    studentId: string | null;
+    subjectId: number | null;
+}

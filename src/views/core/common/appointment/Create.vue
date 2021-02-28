@@ -4,12 +4,26 @@
             class="uk-card-hover"
             padding="large"
         >
-            <vk-card-title class="uk-margin-remove-bottom">Add an appointment with
+            <vk-card-title
+                v-if="appointmentId == 0"
+                class="uk-margin-remove-bottom"
+            >Add an appointment with
                 <span
                     style="cursor: pointer"
                     @click="$router.push({ name: 'user-view', params: { id: studentId }})"
                 > {{ studentName }} </span>
             </vk-card-title>
+
+            <vk-card-title
+                v-else
+                class="uk-margin-remove-bottom"
+            >Edit appointment with
+                <span
+                    style="cursor: pointer"
+                    @click="$router.push({ name: 'user-view', params: { id: studentId }})"
+                > {{ studentName }} </span>
+            </vk-card-title>
+
             <hr />
 
             <form
@@ -33,6 +47,7 @@
                             <div class="col-md-12">
                                 <label for="name">Subject</label>
                                 <v-select
+                                    v-if="appointment"
                                     label="title"
                                     :options="subjects"
                                     :reduce="x => x.id"
@@ -46,6 +61,7 @@
                         <v-date-picker
                             v-model="dateUtc"
                             :min-date='Date.now()'
+                            @dayclick="timePickerDateChanged"
                         />
 
                         <div class="m-3">
@@ -105,9 +121,16 @@
             </form>
 
             <vk-button
+                v-if="appointmentId == 0"
                 class="uk-width-1-1 uk-button-secondary"
                 @click="addAppointment"
             >Add</vk-button>
+
+            <vk-button
+                v-else
+                class="uk-width-1-1 uk-button-secondary"
+                @click="editAppointment"
+            >Edit</vk-button>
         </vk-card>
     </div>
 </template>
@@ -120,46 +143,7 @@ import { AppointmentCreateModel } from "@/models/core/common/Appointments";
 
 @Component({})
 export default class AppointmentCreate extends Vue {
-    private dateUtc = null;
-
-    private range = {
-        start: null,
-        end: null,
-    };
-
-    private masks = {
-        input: ['HH:mm'],
-        is24hr: true
-    };
-
-    @Watch('dateUtc')
-    private async timePickerDatechanged(): Promise<void> {
-        // this.range.start = new Date('2001-01-01');
-        // this.range.end = new Date('2001-01-01');
-
-        // this.range.start.setDate(DateTime.fromISO(this.dateUtc.toISOString()).day);
-        // this.range.start.setMonth(DateTime.fromISO(this.dateUtc.toISOString()).month - 1);
-        // this.range.start.setFullYear(DateTime.fromISO(this.dateUtc.toISOString()).year);
-
-        // this.range.end.setDate(DateTime.fromISO(this.dateUtc.toISOString()).day);
-        // this.range.end.setMonth(DateTime.fromISO(this.dateUtc.toISOString()).month - 1);
-        // this.range.end.setFullYear(DateTime.fromISO(this.dateUtc.toISOString()).year);
-
-        this.range.start = this.dateUtc;
-        this.range.end = this.dateUtc;
-    }
-
-
-    private get studentId(): string {
-        return this.$route.params.studentId;
-    }
-
-    private get studentName(): string {
-        return this.$route.params.studentName;
-    }
-
     private subjects: SubjectsTitles[] = [];
-
     private appointment: AppointmentCreateModel =
         {
             id: 0,
@@ -168,12 +152,46 @@ export default class AppointmentCreate extends Vue {
             endDateUTC: null,
             teacherId: '',
             studentId: '',
-            subjectId: 0
+            subjectId: null
         };
+
+    private get appointmentId(): number {
+        return Number(this.$route.params.id) || 0;
+    }
+
+    private dateUtc = null;
+
+    private range = {
+        start: null,
+        end: null,
+    };
+
+    private get studentName(): string {
+        return this.$route.params.studentName;
+    }
+
+    private get studentId(): string {
+        return this.$route.params.studentId;
+    }
 
     async created(): Promise<void> {
 
         this.subjects = (await this.$axios.get("/subjects/list")).data;
+
+        if (this.appointmentId != 0) {
+
+            this.appointment = (await this.$axios.get("/appointments/" + this.appointmentId)).data;
+
+            this.$nextTick(() => {
+                this.dateUtc = this.appointment.startDateUTC;
+                this.timePickerDateChanged();
+            });
+        }
+    }
+
+    private async timePickerDateChanged(): Promise<void> {
+        this.range.start = this.dateUtc;
+        this.range.end = this.dateUtc;
     }
 
     async addAppointment(): Promise<void> {
@@ -188,6 +206,48 @@ export default class AppointmentCreate extends Vue {
             this.$swal.fire({
                 icon: 'success',
                 title: 'Appointment is ready',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', this.$swal.stopTimer)
+                    toast.addEventListener('mouseleave', this.$swal.resumeTimer)
+                }
+            });
+
+            this.$emit('update-reviews');
+        }
+        catch {
+            this.$swal.fire({
+                icon: 'error',
+                title: 'Something went wrong!',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', this.$swal.stopTimer)
+                    toast.addEventListener('mouseleave', this.$swal.resumeTimer)
+                }
+            });
+        }
+    }
+
+    async editAppointment(): Promise<void> {
+        this.appointment.teacherId = this.$store.state.auth.user.id;
+        this.appointment.studentId = this.studentId;
+        this.appointment.startDateUTC = this.range.start;
+        this.appointment.endDateUTC = this.range.end;
+
+        try {
+            await this.$axios.put("/appointments", this.appointment);
+
+            this.$swal.fire({
+                icon: 'success',
+                title: 'Appointment is edited',
                 toast: true,
                 position: 'top-end',
                 showConfirmButton: false,
