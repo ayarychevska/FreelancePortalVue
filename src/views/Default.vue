@@ -39,6 +39,15 @@
                     >
                     </vk-navbar-nav-item>
                 </vk-navbar-nav>
+
+                <vk-navbar-nav>
+                    <vk-navbar-nav-item
+                        icon="commenting"
+                        title="Messages"
+                        @click="$router.push({ name: 'chat'})"
+                    >
+                    </vk-navbar-nav-item>
+                </vk-navbar-nav>
             </vk-navbar-nav>
 
             <vk-navbar-nav slot="right">
@@ -51,6 +60,10 @@
                         <vk-nav-item
                             title="Profile"
                             @click="view"
+                        ></vk-nav-item>
+                        <vk-nav-item
+                            title="Messages"
+                            @click="messages"
                         ></vk-nav-item>
                         <vk-nav-item
                             title="Settings"
@@ -95,6 +108,10 @@ export default class Default extends Vue {
 
     async view(): Promise<void> {
         this.$router.push({ name: "user-view", params: { id: this.user.id } });
+    }
+
+    async messages(): Promise<void> {
+        this.$router.push({ name: "chat" });
     }
 }
 </script>
