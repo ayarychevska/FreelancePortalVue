@@ -13,6 +13,7 @@ import 'sweetalert2/dist/sweetalert2.min.css';
 import vSelect from 'vue-select';
 import Editor from '@tinymce/tinymce-vue'
 import VCalendar from 'v-calendar';
+import VueNativeSock from 'vue-native-websocket';
 
 axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 axios.defaults.headers.common["Authorization"] = `Bearer ${localStorage.getItem('token')}`;
@@ -28,6 +29,11 @@ Vue.use(VueSweetalert2);
 Vue.use(Vuikit);
 Vue.use(VuikitIcons);
 Vue.use(BootstrapVue);
+Vue.use(VueNativeSock, 'wss://localhost:5001/ws', {
+    store: store,
+    connectManually: true,
+})
+
 Vue.config.productionTip = false;
 Vue.component('v-select', vSelect);
 Vue.component('editor', Editor);

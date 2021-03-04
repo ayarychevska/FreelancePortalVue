@@ -52,6 +52,8 @@ import { Component, Vue } from "vue-property-decorator";
 
 @Component({})
 export default class Login extends Vue {
+    private connection;
+
     private user: UserLoginModel = {
         login: "katya",
         password: "katya"
@@ -59,6 +61,9 @@ export default class Login extends Vue {
 
     async login(): Promise<void> {
         await this.$store.dispatch("auth/login", this.user);
+
+        await this.$store.dispatch("ws/connect");
+        //await this.$store.dispatch("ws/sendMsg", { text: 'privet', to: '9a4fde7f-9cc4-4bb1-bb75-4877ae43421d' });
 
         if (this.$store.state.auth.status) {
             this.$swal.fire({

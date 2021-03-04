@@ -126,6 +126,7 @@
                     <br>
                     <vk-button-link
                         class="my-3"
+                        @click="$router.push({ name: 'chat'})"
                         type="text"
                     >
                         <vk-icon
@@ -191,6 +192,14 @@ export default class Dashboard extends Vue {
 
     async created(): Promise<void> {
         await this.loadData();
+
+        // await this.$store.dispatch("ws/sendMsg", { text: 'dashboard has been loaded', to: '9a4fde7f-9cc4-4bb1-bb75-4877ae43421d' });
+        // await this.$store.dispatch("ws/sendMsg", { text: 'test 1', to: '9a4fde7f-9cc4-4bb1-bb75-4877ae43421d' });
+
+        // await this.$store.dispatch("ws/sendMsg", { text: 'Another test message', to: '8ea39a28-cd2a-4f08-b6fa-c7e796def4c6' });
+        // await this.$store.dispatch("ws/sendMsg", { text: 'Newest 2', to: '8ea39a28-cd2a-4f08-b6fa-c7e796def4c6' });
+        // await this.$store.dispatch("ws/sendMsg", { text: 'And another one', to: '10efc104-8fe7-4407-bcc8-8bf9fb86eb2d' });
+        // await this.$store.dispatch("ws/sendMsg", { text: 'Newest 3', to: '10efc104-8fe7-4407-bcc8-8bf9fb86eb2d' });
     }
 
     async loadData() {

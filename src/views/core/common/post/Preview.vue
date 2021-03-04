@@ -85,7 +85,7 @@ import { DateTime } from "luxon";
 import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component({})
-export default class Rreview extends Vue {
+export default class Preview extends Vue {
     @Prop({ required: true }) post!: PostListViewModel;
     @Prop({ required: true, default: false }) editable!: boolean;
 
