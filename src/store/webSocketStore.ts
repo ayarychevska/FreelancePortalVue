@@ -11,6 +11,7 @@ export default class WebSocketStore extends VuexModule {
         console.log('We are trying to establish WS connection...');
         this.connection = new WebSocket(`wss://localhost:5001/ws?id=${userId}`)
         console.log('WS connection has been established', this.connection);
+        this.connected = true;
     }
 
     @Mutation
@@ -42,12 +43,19 @@ export default class WebSocketStore extends VuexModule {
             if (this.connection == null) {
                 this.context.commit('establishConnection', this.context.rootState.auth.user.id);
             }
+            else {
+                console.log("Connection is not null",);
+            }
 
             const message = JSON.stringify(msg);
+            console.log(message);
 
             if (this.connected == false) {
                 console.log('Waiting for onopen');
-                this.connection.onopen = () => this.connection.send(message);
+                this.connection.onopen = () => {
+                    this.connection.send(message);
+                    console.log("opened");
+                }
                 this.context.commit('confirmOpen');
             }
             else {
