@@ -44,7 +44,7 @@
                             :api-key="tinyMceApiKey"
                             v-model="post.text"
                             :init="{
-                        height: 500,
+                        height: 350,
                         menubar: false,
                         plugins: [
                             'advlist autolink lists link image charmap print preview anchor',

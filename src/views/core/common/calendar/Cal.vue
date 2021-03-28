@@ -6,44 +6,33 @@
             :time-to="24 * 60"
             :disable-views="['years']"
             :events="events"
-            style="height: 800px"
+            style="height: 850px"
             :on-event-click="onEventClick"
         >
             <template v-slot:event="{ event }">
                 <!-- <v-icon>{{ event.icon }}</v-icon> -->
 
                 <div
-                    class="vuecal__event-title"
+                    style="font-size: 0.8em;"
+                    class="vuecal__event-title uk-margin-remove uk-padding-remove"
                     v-html="event.title"
-                />
+                >
+                </div>
 
-                <small class="vuecal__event-time">
+                <small class="vuecal__event-time uk-margin-remove uk-padding-remove">
                     <!-- Using Vue Cal injected Date prototypes -->
-                    <strong>Time:</strong> <span>{{ event.start.formatTime("HH-mm") }} - {{ event.end.formatTime("HH-mm") }}</span><br />
+                    <strong>Time:</strong> <span>{{ event.start.formatTime("HH-mm") }} - {{ event.end.formatTime("HH-mm") }} </span><br />
+                    <strong>Lesson with: </strong>
+                    <b-link
+                        style="font-color: white"
+                        type="text"
+                        class="uk-margin-remove"
+                        @click="$router.push({ name: 'user-view', params: { id: event.studentId }})"
+                    >{{ event.studentName }}</b-link>
                 </small>
 
             </template>
         </vue-cal>
-
-        <!-- Using Vuetify -->
-        <v-dialog v-model="showDialog">
-            <v-card>
-                <v-card-title>
-                    <v-icon>{{ selectedEvent.icon }}</v-icon>
-                    <span>{{ selectedEvent.title }}</span>
-                    <v-spacer />
-                    <strong>{{ selectedEvent.start && selectedEvent.start.format('DD/MM/YYYY') }}</strong>
-                </v-card-title>
-                <v-card-text>
-                    <p v-html="selectedEvent.contentFull" />
-                    <strong>Event details:</strong>
-                    <ul>
-                        <li>Event starts at: {{ selectedEvent.start && selectedEvent.start.formatTime() }}</li>
-                        <li>Event ends at: {{ selectedEvent.end && selectedEvent.end.formatTime() }}</li>
-                    </ul>
-                </v-card-text>
-            </v-card>
-        </v-dialog>
 
         <!-- <b-modal
             v-if="showDialog"

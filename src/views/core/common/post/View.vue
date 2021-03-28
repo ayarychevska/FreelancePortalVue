@@ -28,7 +28,11 @@
 
                 <div class="row minus-margin mb-3">
                     <div class="col-6">
-                        <small><i> Author: {{ post.userName }} </i> </small>
+                        <vk-button
+                            type="text"
+                            class="uk-margin-remove "
+                            @click="$router.push({ name: 'user-view', params: { id: post.userId }})"
+                        ><small><i> Author: {{ post.userName }} </i> </small></vk-button>
                     </div>
                     <div class="col-6 uk-text-right">
                         <small><i> Subject: {{ post.subjectTitle }} </i></small>

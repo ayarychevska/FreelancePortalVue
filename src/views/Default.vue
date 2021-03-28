@@ -2,7 +2,7 @@
     <div id="app">
         <vk-navbar>
             <vk-navbar-nav slot="left">
-                <vk-navbar-logo>Logo</vk-navbar-logo>
+                <vk-navbar-logo><strong>Study </strong>Portal</vk-navbar-logo>
 
                 <vk-navbar-nav>
                     <vk-navbar-nav-item

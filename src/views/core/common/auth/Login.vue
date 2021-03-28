@@ -15,20 +15,25 @@
                 </p>
                 <hr />
                 <form>
-                    <fieldset class="uk-fieldset">
-                        <div class="uk-margin">
-                            <label for="login">Login</label>
+                    <fieldset class="uk-fieldset uk-width-1-1">
+                        <div class="uk-margin-remove uk-inline uk-width-1-1">
+                            <span class="uk-form-icon">
+                                <vk-icon icon="user"></vk-icon>
+                            </span>
                             <input
-                                class="uk-input uk-form-small"
+                                class="uk-input uk-width-1-1"
+                                :class="user.login == '' ? 'uk-form-danger' : ''"
                                 type="text"
                                 v-model="user.login"
                             />
                         </div>
 
-                        <div class="uk-margin">
-                            <label for="password">Password</label>
+                        <div class="uk-margin uk-inline uk-width-1-1">
+                            <span class="uk-form-icon">
+                                <vk-icon icon="lock"></vk-icon>
+                            </span>
                             <input
-                                class="uk-input uk-form-small"
+                                class="uk-input uk-width-1-1"
                                 type="password"
                                 v-model="user.password"
                             />
@@ -55,8 +60,8 @@ export default class Login extends Vue {
     private connection;
 
     private user: UserLoginModel = {
-        login: "katya",
-        password: "katya"
+        login: "sherlock",
+        password: "sherlock"
     };
 
     async login(): Promise<void> {

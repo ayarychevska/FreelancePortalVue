@@ -8,10 +8,10 @@
                 v-if="appointmentId == 0"
                 class="uk-margin-remove-bottom"
             >Add an appointment with
-                <span
-                    style="cursor: pointer"
+                <vk-button
+                    type="text"
                     @click="$router.push({ name: 'user-view', params: { id: studentId }})"
-                > {{ studentName }} </span>
+                > {{ studentName }} </vk-button>
             </vk-card-title>
 
             <vk-card-title

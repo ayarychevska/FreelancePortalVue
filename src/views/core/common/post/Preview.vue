@@ -12,7 +12,10 @@
                 class="uk-flex-middle"
             >
                 <div class="uk-width-expand">
-                    <vk-card-title class="uk-margin-remove-bottom"> {{ post.title }}</vk-card-title>
+                    <vk-card-title
+                        class="uk-margin-remove-bottom"
+                        style="width: 70%"
+                    > {{ post.title }}</vk-card-title>
                     <p class="uk-text-meta uk-margin-remove-top"><time :datetime="prettyPostDate"> {{ prettyPostDate }}</time></p>
                 </div>
             </vk-grid>
@@ -27,7 +30,12 @@
 
         <div class="row minus-margin">
             <div class="col-6">
-                <small><i> Author: {{ post.userName }} </i> </small>
+                <small><i>Author: </i></small>
+                <vk-button
+                    type="text"
+                    class="uk-margin-remove "
+                    @click="$router.push({ name: 'user-view', params: { id: post.userId }})"
+                ><small><i> {{ post.userName }} </i> </small></vk-button>
             </div>
             <div class="col-6 uk-text-right">
                 <small><i> Subject: {{ post.subjectTitle }} </i></small>
@@ -121,7 +129,7 @@ export default class Preview extends Vue {
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
-    -webkit-line-clamp: 3; /* number of lines to show */
+    -webkit-line-clamp: 2; /* number of lines to show */
     -webkit-box-orient: vertical;
 }
 

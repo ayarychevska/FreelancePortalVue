@@ -137,7 +137,7 @@ export default class AppointmentsList extends Vue {
 
     private pager: Pager = {
         page: 1,
-        size: 2,
+        size: 10,
         total: 0
     };
 

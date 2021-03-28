@@ -16,48 +16,61 @@
                 <hr />
                 <form>
                     <fieldset class="uk-fieldset">
-                        <div class="uk-margin">
-                            <label for="Name">Name</label>
+                        <div class="uk-margin-remove uk-inline uk-width-1-1">
+                            <span class="uk-form-icon">
+                                <vk-icon icon="user"></vk-icon>
+                            </span>
                             <input
-                                class="uk-input uk-form-small"
+                                class="uk-input"
                                 type="text"
+                                placeholder="User name"
                                 v-model="user.name"
                             />
                         </div>
 
                         <div class="uk-margin row">
                             <div class="col-md-6">
-                                <label for="Login">Login</label>
-                                <input
-                                    class="uk-input uk-form-small"
-                                    type="text"
-                                    v-model="user.login"
-                                />
+                                <div class="uk-margin-remove uk-inline uk-width-1-1">
+                                    <span class="uk-form-icon">
+                                        <vk-icon icon="hashtag"></vk-icon>
+                                    </span>
+                                    <input
+                                        class="uk-input"
+                                        type="text"
+                                        placeholder="Login"
+                                        v-model="user.login"
+                                    />
+                                </div>
                             </div>
 
                             <div class="col-md-6">
-                                <label for="name">Email</label>
-                                <input
-                                    class="uk-input uk-form-small"
-                                    type="text"
-                                    v-model="user.email"
-                                />
+                                <div class="uk-margin-remove uk-inline uk-width-1-1">
+                                    <span class="uk-form-icon">
+                                        <vk-icon icon="mail"></vk-icon>
+                                    </span>
+                                    <input
+                                        class="uk-input"
+                                        type="text"
+                                        placeholder="Email"
+                                        v-model="user.email"
+                                    />
+                                </div>
                             </div>
                         </div>
 
                         <div class="display-flex-equal-pieces uk-margin">
                             <div>
-                                <label for="name">Day</label>
                                 <input
-                                    class="uk-input uk-form-small"
+                                    class="uk-input"
                                     type="number"
+                                    placeholder="Day"
                                     v-model="day"
                                 />
                             </div>
                             <div class="ml-4">
-                                <label for="name">Month</label>
                                 <select
-                                    class="uk-select uk-form-small"
+                                    class="uk-select"
+                                    placeholder="Month"
                                     v-model="month"
                                 >
                                     <option value="1">January</option>
@@ -75,10 +88,10 @@
                                 </select>
                             </div>
                             <div class="ml-4">
-                                <label for="name">Year</label>
                                 <input
-                                    class="uk-input uk-form-small"
+                                    class="uk-input"
                                     type="numer"
+                                    placeholder="Year"
                                     v-model="year"
                                 />
                             </div>
@@ -86,21 +99,31 @@
 
                         <div class="display-flex-equal-pieces uk-margin">
                             <div>
-                                <label for="name">Password</label>
-                                <input
-                                    class="uk-input uk-form-small"
-                                    type="password"
-                                    v-model="user.password"
-                                />
+                                <div class="uk-margin-remove uk-inline uk-width-1-1">
+                                    <span class="uk-form-icon">
+                                        <vk-icon icon="lock"></vk-icon>
+                                    </span>
+                                    <input
+                                        class="uk-input"
+                                        type="password"
+                                        placeholder="Password"
+                                        v-model="user.password"
+                                    />
+                                </div>
                             </div>
 
                             <div class="ml-4">
-                                <label for="name">Repeat password</label>
-                                <input
-                                    class="uk-input uk-form-small"
-                                    type="password"
-                                    v-model="user.repeatPassword"
-                                />
+                                <div class="uk-margin-remove uk-inline uk-width-1-1">
+                                    <span class="uk-form-icon">
+                                        <vk-icon icon="lock"></vk-icon>
+                                    </span>
+                                    <input
+                                        class="uk-input"
+                                        type="password"
+                                        placeholder="Repeat password"
+                                        v-model="user.repeatPassword"
+                                    />
+                                </div>
                             </div>
                         </div>
 
@@ -108,7 +131,8 @@
                             <div>
                                 <label for="name">Gender</label>
                                 <select
-                                    class="uk-select uk-form-small"
+                                    placeholder="Gender"
+                                    class="uk-select"
                                     v-model="user.gender"
                                 >
                                     <option value="male">Male</option>
@@ -161,7 +185,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { UserCreateModel } from "@/models/core/common/Users.ts";
+import { UserCreateModel } from "@/models/core/common/Users";
 import { DateTime } from "luxon";
 
 @Component({})
@@ -181,7 +205,8 @@ export default class Registration extends Vue {
         description: "",
         password: "",
         repeatPassword: "",
-        subjectsIds: []
+        subjectsIds: [],
+        avatar: null
     };
 
     private day: number = null;
@@ -193,9 +218,11 @@ export default class Registration extends Vue {
         this.user.dateOfBirth = DateTime.fromISO(stringDate);
 
         try {
-
-            await this.$axios.post("/application-users", this.user);
-            await this.$store.dispatch("auth/login", { login: this.user.login, password: this.user.password });
+            (async () => {
+                await this.$axios.post("/application-users", this.user).then(() => {
+                    this.$store.dispatch("auth/login", { login: this.user.login, password: this.user.password });
+                })
+            })();
 
             this.$swal.fire({
                 icon: 'success',
@@ -210,6 +237,7 @@ export default class Registration extends Vue {
                     toast.addEventListener('mouseleave', this.$swal.resumeTimer)
                 }
             });
+
 
             this.$router.push({ name: "dashboard" });
         }

@@ -5,7 +5,7 @@
 
             <!-- Filters -->
             <div
-                class="col-md-3 uk-text-left"
+                class="col-md-3 uk-text-left col-lg-3"
                 style="max-width: min-content;"
             >
                 <h3> Filters </h3>
@@ -44,7 +44,7 @@
             </div>
 
             <!-- Add post Button -->
-            <div class="col-md-9 uk-text-right">
+            <div class="col-md-6 uk-text-right col-lg-9">
 
                 <vk-button
                     class="uk-button-primary"
@@ -57,7 +57,7 @@
                     style="min-height: 600px"
                 >
                     <div
-                        class="col-md-4"
+                        class="col-md-12 col-lg-4"
                         v-for="post in data.viewModels"
                         :key="post.id"
                     >
