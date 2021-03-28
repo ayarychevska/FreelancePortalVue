@@ -8,6 +8,8 @@ export interface MessageViewModel {
     senderId: string;
     receiverName: string;
     receiverId: string;
+    senderAvatar: string;
+    receiverAvatar: string;
 }
 
 export interface MessageCreateModel {

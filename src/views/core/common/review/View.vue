@@ -6,12 +6,12 @@
                 class="uk-flex-middle uk-text-left"
             >
                 <div class="uk-width-auto">
-                    <img
-                        class="uk-border-circle"
-                        width="40"
-                        height="40"
-                        src="/images/guide/avatar.jpg"
-                    >
+                    <b-avatar
+                        :src="avatar"
+                        id="Avatar"
+                        size="4rem"
+                        class="m-3"
+                    ></b-avatar>
                 </div>
                 <div class="uk-width-expand">
                     <vk-card-title
@@ -62,6 +62,11 @@ export default class Preview extends Vue {
     get prettyReviewDate() {
         return DateTime.fromISO(this.review.datePostedUTC.toString()).toLocaleString(DateTime.DATETIME_MED);
     }
+
+    get avatar() {
+        return this.review.reviewerAvatar ? process.env.VUE_APP_API_URL + "/application-users/" + this.review.reviewerAvatar + "/avatar" : '';
+    }
+
 }
 </script>
 

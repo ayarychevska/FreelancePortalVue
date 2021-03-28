@@ -16,6 +16,7 @@ export interface ReviewViewModel {
     rate: number;
     reviewerId: string;
     reviewerName: string;
+    reviewerAvatar: string;
     reviewingUserId: string;
     reviewingUserName: string;
 }

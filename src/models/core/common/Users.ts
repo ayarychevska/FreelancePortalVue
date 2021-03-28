@@ -12,6 +12,7 @@ export interface UserCreateModel {
   password: string;
   repeatPassword: string;
   subjectsIds: number[];
+  avatar: any;
 }
 
 export interface UserLoginModel {
@@ -35,6 +36,7 @@ export interface UserViewModel {
   gender: string;
   description: string;
   subjects: SubjectsTitles[];
+  avatar: any;
 }
 
 export interface UserListViewModel {
@@ -45,4 +47,5 @@ export interface UserListViewModel {
   dateOfBirth: DateTime;
   gender: string;
   description: string;
+  avatar: any;
 }

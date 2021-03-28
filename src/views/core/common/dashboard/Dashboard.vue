@@ -4,7 +4,7 @@
 
         <div class="row">
             <!-- Filters -->
-            <div class="col-md-2 uk-text-left pr-5">
+            <div class="col-md-4 uk-text-left pr-5 col-lg-2">
                 <h3> Filters </h3>
 
                 <label for="name">Title</label>
@@ -41,13 +41,13 @@
             </div>
 
             <!-- Posts -->
-            <div class="col-md-8 pr-5">
+            <div class="col-md-8 pr-5 col-lg-8">
                 <div
                     class="row mt-4"
                     style="height: 95%; min-height: 595px"
                 >
                     <div
-                        class="col-lg-4 col-md-6"
+                        class="col-lg-4 col-md-8"
                         v-for="post in data.viewModels"
                         :key="post.id"
                     >
@@ -73,10 +73,11 @@
 
             <!-- User Info and links -->
             <div class="col-md-2">
-                <img
-                    src="@/assets/images/avatar.jpg"
-                    class="avatar uk-center uk-border-circle"
-                >
+                <b-avatar
+                    :src="avatar"
+                    size="8rem"
+                    class="mt-2"
+                ></b-avatar>
                 <h2 class="mt-3">{{ $store.state.auth.user.userName }}</h2>
                 <hr>
                 <div class="uk-text-center">
@@ -160,6 +161,7 @@ import { Pager } from "@/models/core/common/Pager";
 import { SubjectsTitles } from "@/models/core/teacher/Subjects";
 import { DateTime } from "luxon";
 import { merge } from 'lodash';
+import { UserViewModel } from "@/models/core/common/Users";
 
 @Component({ components: { PostPreview } })
 export default class Dashboard extends Vue {
@@ -168,6 +170,18 @@ export default class Dashboard extends Vue {
         size: 6,
         total: 0
     };
+
+    private user: UserViewModel = {
+        name: '',
+        login: '',
+        email: '',
+        dateOfBirth: null,
+        userType: '',
+        gender: '',
+        description: '',
+        subjects: [],
+        avatar: ''
+    }
 
     private range: any = {
         start: null,
@@ -204,8 +218,11 @@ export default class Dashboard extends Vue {
 
     async loadData() {
         this.subjects = (await this.$axios.get("/subjects/list")).data;
+        const response: any = await this.$axios.get("/application-users/" + this.$store.state.auth.user.id + '/raw');
+        this.user = response.data;
 
         await this.filterData();
+
     }
 
     eraseDate() {
@@ -222,6 +239,10 @@ export default class Dashboard extends Vue {
 
         this.data = response.data;
         this.pager = this.data.pager;
+    }
+
+    get avatar() {
+        return this.user.avatar ? process.env.VUE_APP_API_URL + "/application-users/" + this.user.avatar + "/avatar" : '';
     }
 }
 </script>

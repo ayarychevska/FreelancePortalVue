@@ -21,7 +21,7 @@
                                 class="uk-border-circle"
                                 width="40"
                                 height="40"
-                                src="/images/guide/avatar.jpg"
+                                :src="avatar"
                             >
                         </div>
                         <div class="uk-width-expand">
@@ -54,6 +54,10 @@ export default class Preview extends Vue {
 
     get prettyMessageDate() {
         return DateTime.fromISO(this.message.dateTimeSendedUTC.toString()).toLocaleString(DateTime.DATETIME_MED);
+    }
+
+    get avatar() {
+        return this.message.senderAvatar ? process.env.VUE_APP_API_URL + "/application-users/" + this.message.senderAvatar + "/avatar" : '';
     }
 }
 </script>

@@ -5,12 +5,34 @@
             padding="small"
         >
             <div class="row">
-                <div class="col-5">
-                    <img
-                        src="@/assets/images/avatar.jpg"
-                        class="avatar uk-center uk-border-circle"
-                    >
-                    <h2 class="mt-3">{{ user.name }}</h2>
+                <div class="col-6">
+                    <b-avatar
+                        :src="avatar"
+                        id="Avatar"
+                        size="12rem"
+                        class="mt-2"
+                    ></b-avatar>
+                    <h2 class="mt-3">{{ user.name }} <vk-button
+                            v-b-modal.modal-center
+                            type="text"
+                            v-if="$store.state.auth.user.id != userId"
+                        >
+                            <vk-icon
+                                icon="commenting"
+                                class="mr-2"
+                            ></vk-icon>
+                        </vk-button>
+                        <vk-button
+                            v-if="$store.state.auth.user.userType == 'teacher' && $store.state.auth.user.id != userId"
+                            type="text"
+                            @click="addAppointment(userId, user.name)"
+                        >
+                            <vk-icon
+                                icon="clock"
+                                class="mr-2"
+                            ></vk-icon>
+                        </vk-button>
+                    </h2>
                     <hr>
 
                     <div class="uk-text-left ml-5 info">
@@ -42,22 +64,28 @@
                             ></vk-icon> {{ user.gender }}
                         </div>
                         <span style="font-size: 12px"><b> Subjects:</b></span><br>
-                        <div>
+                        <div v-if="prettyListOfUserSubjects.length == 0">
+                            No subjecct provided
+                        </div>
+                        <div v-else>
                             {{ prettyListOfUserSubjects }}
                         </div>
                         <span style="font-size: 12px"><b> About me:</b></span><br>
-                        <span v-html="user.description"></span>
+                        <span
+                            v-if="user.description.length == 0"
+                            style="font-size: 0.80em"
+                        >No additional description provided</span>
+                        <span
+                            v-else
+                            style="font-size: 0.80em"
+                            v-html="user.description"
+                        ></span>
 
-                        <vk-button
-                            v-if="$store.state.auth.user.userType == 'teacher' && $store.state.auth.user.id != userId"
-                            class="uk-width-1-1 uk-button-secondary mt-3"
-                            @click="addAppointment(userId, user.name)"
-                        >Make an appointment with user</vk-button>
                     </div>
                 </div>
 
                 <!-- Create review -->
-                <div class="col-7">
+                <div class="col-6">
                     <create-review
                         v-if="userId != $store.state.auth.user.id"
                         class="mb-3"
@@ -97,6 +125,29 @@
                 </div>
             </div>
         </vk-card>
+
+        <!-- Message modal -->
+        <b-modal
+            id="modal-center"
+            centered
+            title="BootstrapVue"
+        >
+            <template #modal-title>
+                Your message to {{ user.name }}
+            </template>
+            <b-textarea v-model="newMessage.text">
+            </b-textarea>
+            <template #modal-footer>
+                <b-button
+                    variant="light"
+                    @click="$bvModal.hide('modal-center')"
+                >Deny</b-button>
+                <b-button
+                    variant="info"
+                    @click="send()"
+                >Send</b-button>
+            </template>
+        </b-modal>
     </div>
 </template>
 
@@ -109,6 +160,7 @@ import CreateReview from "@/views/core/common/review/Create.vue"
 import { ReviewViewModel } from "@/models/core/common/Reviews";
 import { Pager } from "@/models/core/common/Pager";
 import { merge } from 'lodash';
+import { MessageCreateModel } from "@/models/core/common/Messages";
 
 @Component({ components: { ReviewPreview, CreateReview } })
 export default class UserView extends Vue {
@@ -120,7 +172,15 @@ export default class UserView extends Vue {
         dateOfBirth: null,
         gender: "",
         description: "",
-        subjects: []
+        subjects: [],
+        avatar: null
+    }
+
+    private newMessage: MessageCreateModel = {
+        text: "",
+        status: 0,
+        senderId: "",
+        receiverId: ""
     }
 
     private pager: Pager = {
@@ -172,6 +232,7 @@ export default class UserView extends Vue {
     get prettyDateOfBirthDate() {
         if (this.user.dateOfBirth)
             return DateTime.fromISO(this.user.dateOfBirth.toString()).toLocaleString(DateTime.DATE_FULL);
+        //return "none"
         else
             return '-';
     }
@@ -182,6 +243,47 @@ export default class UserView extends Vue {
 
     async addAppointment(studentId): Promise<void> {
         this.$router.push({ name: 'appointment-add', params: { studentId: this.userId, studentName: this.user.name } })
+    }
+
+    get avatar() {
+        return this.user.avatar ? process.env.VUE_APP_API_URL + "/application-users/" + this.user.avatar + "/avatar" : '';
+    }
+
+    async send() {
+        try {
+            await this.$store.dispatch("ws/sendMsg", { text: this.newMessage.text, to: this.userId });
+            this.$bvModal.hide('modal-center');
+
+            this.$swal.fire({
+                icon: 'success',
+                title: 'Message sended',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', this.$swal.stopTimer)
+                    toast.addEventListener('mouseleave', this.$swal.resumeTimer)
+                }
+            });
+        }
+        catch {
+            this.$swal.fire({
+                icon: 'error',
+                title: 'Something went wrong',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', this.$swal.stopTimer)
+                    toast.addEventListener('mouseleave', this.$swal.resumeTimer)
+                }
+            });
+
+        }
     }
 }
 </script>

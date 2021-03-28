@@ -1,65 +1,87 @@
 <template>
-    <div class="row mx-0 px-3">
-        <!-- Conversations -->
-        <div class="col-md-3 uk-padding-remove mt-3">
-            <div style="display: block">
-                <div
-                    style="cursor: pointer;"
-                    :style="selectedConversation && selectedConversation.receiverId == conversation.receiverId ? 'background: red' : ''"
-                    @click="selectDialog(conversation)"
-                    v-for="conversation in conversations"
-                    :key="conversation.id"
-                >
-                    <conversation :conversation="conversation" />
-                </div>
-            </div>
-        </div>
-
-        <!-- Messages -->
+    <div>
+        <!-- If there are no messages -->
         <div
-            id="scroll-div"
-            class="col-md-9"
-            style="display: block; max-height: 800px; overflow: auto"
+            v-if="conversations.length == 0"
+            class="m-5"
         >
+            <strong> There are no messages you have. </strong> <br />
+            In order to start conversation, you have to open receiver's profile and text him.
+        </div>
+
+        <div
+            v-else
+            class="row mx-0 px-3"
+        >
+
+            <!-- Conversations -->
             <div
-                class="uk-text-left"
-                v-if="messages.length > 0"
+                class="col-md-3 uk-padding-remove mt-3"
+                v-if="loading === false"
             >
-                <div
-                    v-for="message in messages"
-                    :key="message.id"
-                    :class="isMyMessage(message) ? 'uk-text-right': 'uk-text-left'"
-                >
-                    <message
-                        :message="message"
-                        :myMessage="isMyMessage(message)"
-                    />
+                <div style="display: block">
+                    <div
+                        style="cursor: pointer;"
+                        :style="selectedConversation && 
+                        (selectedConversation.receiverId == conversation.receiverId) && 
+                        (selectedConversation.senderId == conversation.senderId) 
+                        ? 'background: teal' : ''"
+                        @click="selectDialog(conversation)"
+                        v-for="conversation in conversations"
+                        :key="conversation.id"
+                    >
+                        <conversation :conversation="conversation" />
+                    </div>
                 </div>
             </div>
 
-        </div>
-
-        <!-- Create message -->
-        <div class="footer col-md-9 ml-1 mb-2">
-            <b-input-group
-                prepend="Text"
-                class="mt-3"
-                style="min-height: 60px;"
+            <!-- Messages -->
+            <div
+                id="scroll-div"
+                class="col-md-9"
+                style="display: block; max-height: 800px; overflow: auto"
             >
-                <b-form-textarea
-                    style="min-height: 60px;"
-                    v-model="newMessage.text"
-                ></b-form-textarea>
-                <b-input-group-append>
-                    <b-button
-                        :disabled="!newMessage || newMessage.text.length == 0"
-                        variant="info"
-                        @click="send()"
+                <div
+                    class="uk-text-left"
+                    v-if="messages.length > 0"
+                >
+                    <div
+                        v-for="message in messages"
+                        :key="message.id"
+                        :class="isMyMessage(message) ? 'uk-text-right': 'uk-text-left'"
                     >
-                        <vk-icon icon="arrow-right"></vk-icon>
-                    </b-button>
-                </b-input-group-append>
-            </b-input-group>
+                        <message
+                            :message="message"
+                            :myMessage="isMyMessage(message)"
+                        />
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Create message -->
+            <div class="footer col-md-9 ml-1 mb-2">
+                <b-input-group
+                    prepend="Text"
+                    class="mt-3"
+                    style="min-height: 60px;"
+                >
+                    <b-form-textarea
+                        style="min-height: 60px;"
+                        v-model="newMessage.text"
+                        :disabled="selectedConversation == null"
+                    ></b-form-textarea>
+                    <b-input-group-append>
+                        <b-button
+                            :disabled="!newMessage || newMessage.text.length == 0 || selectedConversation == null"
+                            variant="info"
+                            @click="send()"
+                        >
+                            <vk-icon icon="arrow-right"></vk-icon>
+                        </b-button>
+                    </b-input-group-append>
+                </b-input-group>
+            </div>
         </div>
     </div>
 </template>
@@ -82,6 +104,8 @@ export default class Chat extends Vue {
         senderId: "",
         receiverId: ""
     }
+
+    private loading = false;
 
     private data =
         {
@@ -108,7 +132,6 @@ export default class Chat extends Vue {
 
     async loadData() {
         this.conversations = (await this.$axios.get("/messages/conversations/" + this.userId)).data;
-        console.log(this.conversations);
         this.newMessage.senderId = this.userId;
 
         this.$nextTick(() => this.scrollToTheBottom());
@@ -116,9 +139,11 @@ export default class Chat extends Vue {
     }
 
     async completeReload() {
+        this.loading = true;
         await this.loadData();
         await this.loadConversation(this.newMessage.receiverId, this.userId);
         this.scrollToTheBottom();
+        this.loading = false;
     }
 
     async selectDialog(conversation: MessageViewModel) {

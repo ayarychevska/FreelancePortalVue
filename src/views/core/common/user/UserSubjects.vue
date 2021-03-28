@@ -23,7 +23,7 @@
                 :api-key="tinyMceApiKey"
                 v-model="user.description"
                 :init="{
-                        height: 500,
+                        height: 350,
                         menubar: false,
                         plugins: [
                             'advlist autolink lists link image charmap print preview anchor',
@@ -76,7 +76,8 @@ export default class UserSubjects extends Vue {
         description: "",
         subjectsIds: [],
         password: "",
-        repeatPassword: ""
+        repeatPassword: "",
+        avatar: null
     };
 
     private day: number = null;

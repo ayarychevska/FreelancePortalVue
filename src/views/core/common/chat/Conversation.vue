@@ -7,8 +7,9 @@
             <b-row no-gutters>
                 <b-col md="2">
                     <b-card-img
-                        src="https://picsum.photos/400/400/?image=20"
+                        :src="avatar"
                         alt="Image"
+                        id="Avatar"
                         class="rounded-2"
                     ></b-card-img>
                 </b-col>
@@ -28,9 +29,15 @@
                         <b-card-text class="mt-1">
                             <div class="uk-text-left pl-1 mt-0 pt-0">
                                 <span
+                                    v-if="this.conversation.senderId == userId"
+                                    class="preview"
+                                    v-html="'<i><small>you: </small></i>' + conversation.text"
+                                > </span>
+                                <span
+                                    v-else
                                     class="preview"
                                     v-html="conversation.text"
-                                />
+                                > </span>
                             </div>
                         </b-card-text>
                     </b-card-body>
@@ -55,11 +62,20 @@ export default class Preview extends Vue {
         return DateTime.fromISO(this.conversation.dateTimeSendedUTC.toString()).toLocaleString(DateTime.DATETIME_MED);
     }
 
+    get userId() {
+        return this.$store.state.auth.user.id;
+    }
+
     conversationWith =
         {
             id: this.$store.state.auth.user.id == this.conversation.senderId ? this.conversation.receiverId : this.conversation.senderId,
-            name: this.$store.state.auth.user.id == this.conversation.senderId ? this.conversation.receiverName : this.conversation.senderName
+            name: this.$store.state.auth.user.id == this.conversation.senderId ? this.conversation.receiverName : this.conversation.senderName,
+            avatar: this.$store.state.auth.user.id == this.conversation.senderId ? this.conversation.receiverAvatar : this.conversation.senderAvatar
         }
+
+    get avatar() {
+        return this.conversationWith.avatar ? process.env.VUE_APP_API_URL + "/application-users/" + this.conversationWith.avatar + "/avatar" : '';
+    }
 }
 </script>
 
